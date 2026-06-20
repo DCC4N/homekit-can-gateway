@@ -1,0 +1,47 @@
+graph TB
+    subgraph "User Control"
+        A[iPhone/iPad<br/>Home App]
+        B[RF Remote<br/>Control]
+    end
+    
+    subgraph "ESP32 - HomeKit-CAN Gateway"
+        C[HomeSpan<br/>Core 0]
+        D[CAN Task<br/>Core 1]
+        E[Mutex<br/>Thread-safe]
+        F[Green LED<br/>GPIO 17]
+        G[Red LED<br/>GPIO 16]
+    end
+    
+    subgraph "CAN Bus"
+        H[MCP2562<br/>Transceiver]
+        I[CAN Bus<br/>125 kbps]
+    end
+    
+    subgraph "Motorized Gate"
+        J[Gate<br/>Controller]
+        K[Motor]
+        L[End Stop<br/>Sensors]
+        M[Obstruction<br/>Detection]
+    end
+    
+    A -->|WiFi| C
+    C <-->|Mutex| E
+    E <-->|Mutex| D
+    D <-->|GPIO 22/23| H
+    H <-->|CANH/CANL| I
+    I <-->|CAN Messages| J
+    
+    B -->|RF 433MHz| J
+    
+    J --> K
+    L --> J
+    M --> J
+    
+    C -->|Control| F
+    C -->|Control| G
+    
+    style A fill:#2196F3,color:#fff
+    style C fill:#4CAF50,color:#fff
+    style D fill:#FF9800,color:#fff
+    style J fill:#9C27B0,color:#fff
+    style I fill:#F44336,color:#fff
